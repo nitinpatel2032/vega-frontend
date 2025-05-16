@@ -19,27 +19,29 @@ export default function BlogForm() {
     const isView = location.pathname.includes("/view");
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await getBlogById(id);
-                const data = res.data.data;
-                if (data) {
-                    setForm({
-                        title: data.title,
-                        description: data.description,
-                        image: null,
-                    });
-                    setCurrentImage(data.image || null);
-                    setCurrentImageId(data.imageId || null);
+        if (id) {
+            const fetchData = async () => {
+                try {
+                    const res = await getBlogById(id);
+                    const data = res.data.data;
+                    if (data) {
+                        setForm({
+                            title: data.title,
+                            description: data.description,
+                            image: null,
+                        });
+                        setCurrentImage(data.image || null);
+                        setCurrentImageId(data.imageId || null);
+                    }
+                    if (isView) setViewMode(true);
+                } catch (error) {
+                    console.error("Error in loading:", error);
+                    alert("Failed to load.");
                 }
-                if (isView) setViewMode(true);
-            } catch (error) {
-                console.error("Error in loading:", error);
-                alert("Failed to load.");
-            }
-        };
+            };
 
-        fetchData();
+            fetchData();
+        }
     }, [id, isView]);
 
     const handleChange = (e) => {
