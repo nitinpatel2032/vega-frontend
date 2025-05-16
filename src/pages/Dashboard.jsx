@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import axios from "axios";
+import { getProfile, logoutUser, getAllBlogs, deleteBlog } from "../services/apiService";
 
 export default function Dashboard() {
     const navigate = useNavigate();
-    const token = localStorage.getItem("token");
     const [user, setUser] = useState(null);
     const [blogs, setBlogs] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -13,9 +12,7 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get("http://localhost:8000/api/auth/profile", {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const res = await getProfile();
                 setUser(res.data.data);
                 fetchBlogs();
             } catch (err) {
@@ -27,9 +24,7 @@ export default function Dashboard() {
 
     const fetchBlogs = async () => {
         try {
-            const res = await axios.get("http://localhost:8000/api/blogs", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await getAllBlogs();
             setBlogs(res.data.data);
         } catch (err) {
             console.error("Error fetching blogs:", err);
@@ -39,9 +34,7 @@ export default function Dashboard() {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this blog ?")) {
             try {
-                await axios.delete(`http://localhost:8000/api/blogs/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await deleteBlog(id);
                 setBlogs(prev => prev.filter(blog => blog._id !== id));
             } catch (err) {
                 console.error("Error deleting blog:", err);
@@ -51,9 +44,7 @@ export default function Dashboard() {
 
     const logout = async () => {
         try {
-            await axios.get(`http://localhost:8000/api/auth/logout`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await logoutUser();
             localStorage.removeItem("token");
             navigate("/");
         } catch (err) {
@@ -140,7 +131,6 @@ export default function Dashboard() {
                 </table>
             </div>
 
-            {/* Modal for image preview */}
             {selectedImage && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-4 rounded shadow-lg relative max-w-md w-full">

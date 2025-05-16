@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { signUpUser } from "../../src/services/apiService";
 import axios from "axios";
 
 export default function Signup() {
@@ -27,7 +28,7 @@ export default function Signup() {
                 imageUrl = uploadRes.data.secure_url;
             }
 
-            await axios.post("http://localhost:8000/api/auth/signup", {
+            await signUpUser({
                 email: form.email,
                 password: form.password,
                 image: imageUrl,

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import CommentSection from "./Comment";
+import { getBlogById, createBlog, updateBlog, deleteBlogImage, } from "../services/apiService";
 import axios from "axios";
 
 export default function BlogForm() {
     const navigate = useNavigate();
     const { id } = useParams();
     const location = useLocation();
-    const token = localStorage.getItem("token");
 
     const [form, setForm] = useState({ title: "", description: "", image: null });
     const [currentImage, setCurrentImage] = useState(null);
@@ -21,9 +21,7 @@ export default function BlogForm() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get(`http://localhost:8000/api/blogs/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const res = await getBlogById(id);
                 const data = res.data.data;
                 if (data) {
                     setForm({
@@ -42,7 +40,7 @@ export default function BlogForm() {
         };
 
         fetchData();
-    }, [id, isView, token]);
+    }, [id, isView]);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -65,10 +63,7 @@ export default function BlogForm() {
 
             if (removedImage && currentImageId) {
                 try {
-                    await axios.post("http://localhost:8000/api/blogs/delete",
-                        { public_id: currentImageId },
-                        { headers: { Authorization: `Bearer ${token}` }, }
-                    );
+                    await deleteBlogImage(currentImageId);
                     imageUrl = "";
                     imageId = "";
                 } catch (error) {
@@ -98,15 +93,9 @@ export default function BlogForm() {
             };
 
             if (isEdit) {
-                await axios.put(`http://localhost:8000/api/blogs/${id}`, payload,
-                    {
-                        headers: { Authorization: `Bearer ${token}`, },
-                    });
+                await updateBlog(id, payload);
             } else {
-                await axios.post("http://localhost:8000/api/blogs", payload,
-                    {
-                        headers: { Authorization: `Bearer ${token}`, },
-                    });
+                await createBlog(payload);
             }
 
             navigate("/dashboard");
@@ -189,7 +178,7 @@ export default function BlogForm() {
             </form>
 
             {(isView) && id && (
-                <CommentSection blogId={id} token={token} />
+                <CommentSection blogId={id} />
             )}
         </div>
     );
