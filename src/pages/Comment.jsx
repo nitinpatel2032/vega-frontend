@@ -28,7 +28,7 @@ export default function CommentSection({ blogId }) {
         if (!newComment.trim()) return;
 
         try {
-            const res = await createComment(blogId);
+            const res = await createComment(blogId, newComment);
             setData((prev) => [...prev, res.data.data]);
             setNewComment("");
         } catch (error) {
@@ -59,7 +59,7 @@ export default function CommentSection({ blogId }) {
 
     const handleSaveEdit = async (commentId) => {
         try {
-            const res = await updateComment(commentId);
+            const res = await updateComment(commentId, editedText);
 
             setData((prev) =>
                 prev.map((item) =>

@@ -34,7 +34,7 @@ export const deleteBlog = (id) => api.delete(`/blogs/${id}`);
 export const deleteBlogImage = (public_id) => api.post("/blogs/delete", { public_id });
 
 export const createComment = (blogId, comment) => api.post(`/comments/${blogId}`, { comment });
-export const updateComment = (commentId, comment) => api.put(`/comments/${commentId}`, { comment });
+export const updateComment = (commentId, newComment) => api.put(`/comments/${commentId}`, { newComment });
 export const getComments = (blogId) => api.get(`/comments/${blogId}`);
 export const deleteComment = (commentId) => api.delete(`/comments/${commentId}`);
 
